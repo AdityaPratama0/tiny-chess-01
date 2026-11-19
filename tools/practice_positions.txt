@@ -1,3 +1,0 @@
-# Full games begin from the standard initial position. Tactical winning FENs
-# made the old harness report forced mates at ply 3 as completed games.
-rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1

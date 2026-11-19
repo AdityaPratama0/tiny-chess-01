@@ -1,1 +1,4 @@
 engine.py
+tests/
+tools/
+__pycache__/
