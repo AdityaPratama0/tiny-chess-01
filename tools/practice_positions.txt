@@ -1,0 +1,7 @@
+# Compact decisive practice set. Side to move is the tested engine's colour.
+k7/8/8/8/8/8/5K2/6QR w - - 0 1
+6qr/5k2/8/8/8/8/8/K7 b - - 0 1
+k7/8/8/8/3B4/8/5K2/6QR w - - 0 1
+6qr/5k2/8/3b4/8/8/8/K7 b - - 0 1
+k7/8/8/8/8/3N4/5K2/6QR w - - 0 1
+6qr/5k2/3n4/8/8/8/8/K7 b - - 0 1
