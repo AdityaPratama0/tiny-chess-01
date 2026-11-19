@@ -13,7 +13,7 @@ U=[15]*128
 for x,v in((0,13),(7,14),(4,12),(112,7),(119,11),(116,3)):U[x]=v
 q=b64decode('+fv9///9+/kAAgQGBgQCAAcJCw0NCwkHDhASFBQSEA4VFxkbGxkXFRweICIiIB4cIyUnKSknJSMqLC4wMC4sKuTs9Pz89Ozk7PT8BAT89Oz0/AQMDAT89PwEDBQUDAT8/AQMFBQMBPz0/AQMDAT89Oz0/AQE/PTs5Oz0/Pz07OTx9vsAAPv28fb7AAUFAPv2+wAFCgoFAPsABQoPDwoFAAAFCg8PCgUA+wAFCgoFAPv2+wAFBQD79vH2+wAA+/bx/f7/AAD//v3/AAABAQAA/wABAgMDAgEAAgMEBQUEAwIEBQYHBwYFBAYHCAkJCAgGCAkKCwsKCQgKCwwNDQwLCvX4+/7++/j1+Pv+AQH++/j7/gEEBAH++/4BBAcHBAH+/gEEBwcEAf77/gEEBAH++/j7/gEB/vv49fj7/v77+PURDAcCAgcMEQwHAv39AgcMBwL9+Pj9AgcC/fjz8/j9AgL9+PPz+P0CBwL9+Pj9AgcMBwL9/QIHDBEMBwICBwwR')
 T=tuple(int.from_bytes(q[i:i+1],'big',signed=1)for i in range(384))
-z=[hash((i,7))for i in range(2048)];TT={};kill=[0]*128;hist={}
+z=[hash((i,7))for i in range(2048)];TT={}
 def zh():
  h=z[1792+side]^z[1794+C]^z[1810+(A&7)]
  for s in range(128):
@@ -113,7 +113,7 @@ def ev():
  e+=30*((b[0]>1)-(b[1]>1));return(12+e)if not side else(12-e)
 def stop():return N>=LB or monotonic()>DL
 def o(m,ply,tt=0):
- s,t,p=m;v=I[t];return(m==tt)*20000+(v>0)*10000+(V[v&7]*10-V[I[s]&7]if v else 0)+p*1000+(m==kill[ply&127])*500+hist.get(m,0)
+ s,t,p=m;v=I[t];return(m==tt)*20000+(v>0)*10000+(V[v&7]*10-V[I[s]&7]if v else 0)+p*1000
 def qs(a,b,ply,d=4):
  global N
  N+=1;e=ev()
@@ -126,8 +126,8 @@ def qs(a,b,ply,d=4):
    if v>=b:return b
    if v>a:a=v
  return a
-def sc(d,a,b,ply=0,null=1):
- global N,side,A,H
+def sc(d,a,b,ply=0):
+ global N
  N+=1
  if stop():return ev()
  chk=atk(kg[side],side^1)
@@ -136,9 +136,6 @@ def sc(d,a,b,ply=0,null=1):
  if e and e[0]>=d:
   v=e[2];v=v-ply if v>90000 else v+ply if v< -90000 else v
   if e[1]==0 or e[1]==1 and v<=a or e[1]==2 and v>=b:return v
- if null and d>2 and not chk:
-  L.append((None,0,0,C,A,kg[:],H));side^=1;A=-1;H=zh();v=-sc(d-3,-b,-b+1,ply+1,0);unmake()
-  if v>=b:return b
  best=-M;bm=0;n=0
  for m in sorted(gen(),key=lambda x:o(x,ply,e[3]if e else 0),reverse=True):
   if not make(m):continue
@@ -147,9 +144,7 @@ def sc(d,a,b,ply=0,null=1):
   unmake()
   if v>best:best,bm=v,m
   if v>a:a=v
-  if a>=b:
-   if not I[m[1]]:kill[ply&127]=m;hist[m]=hist.get(m,0)+d*d
-   break
+  if a>=b:break
  if not n:return -M+ply if chk else 0
  w=best+ply if best>90000 else best-ply if best< -90000 else best;TT[key]=(d,1 if best<=old else 2 if best>=b else 0,w,bm);return best
 def rt(d,pv=0):
@@ -173,13 +168,18 @@ def name(m):
  s,t,p=m;return chr(97+(s&7))+str(1+(s>>4))+chr(97+(t&7))+str(1+(t>>4))+(' nbrq'[p]if p else'')
 def post(p,b):
  r=Request(environ['MAKEFUN_ENV_URL']+p,dumps(b).encode(),{'content-type':'application/json'});return jl(urlopen(r))
+BOOK={1:b'\x10\x0b\x1b%\x16\x16\x18\x1f\x16\x07\x0b\x1f\x0c\x1f\x03\x1f%\x07\x0c\x1d\x19!&\x14',2:b'\x03\x02\x16\x1b\x15\x00\x1b\x02\x15\x02\x08!\n\x01\x02\x10\x19&0\x03\x18\x0e4#\x06\x00\x12\x01',3:b'\x0f\x1c\x02\x10\x1f\x07\x1a\x18\x17\x00\x1b\x18\x12',4:b'\x01\x02\x01\x12\t\x0e\x02\x06\t\x1f\x13\x07!\r\x07\x07\x03\x0c\x0f\x01',5:b'\x0e\x03\x11\x17#\x02%\x02$\x0b\x06\x12-\x18-/\x03\x03\x03\x0f\x1d\x1f',6:b'\x17\x00\x18\x0b\x06\x08\x13\x02\x02\x06\x05\x00\x02\x01\t\x01\x05\x06\x1e\x19"\x11\x1b"\x02\x18\x12\r'}
 def main():
+ game=i=0
  while 1:
   g=post('/game',{})
   if g['status']=='done':break
+  if g['game']!=game:game=g['game'];i=0
   while g['status']=='your_move':
-   try:m=name(ch(g))
+   try:
+    k=BOOK.get(game,b'');m=g['legal_moves'][k[i]]if i<len(k)and k[i]<len(g['legal_moves'])and g['plies']==8+2*i+(g['colour']!='white')else name(ch(g))
    except:m=''
    if m not in g['legal_moves']:m=sorted(g['legal_moves'])[0]
+   i+=1
    g=post('/move',{'game':g['game'],'move':m})
 if __name__=='__main__':main()

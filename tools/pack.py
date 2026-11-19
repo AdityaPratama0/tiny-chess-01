@@ -7,7 +7,7 @@ def build(source):
     mini=minify(source)
     packed=lzma.compress(mini.encode(),preset=9|lzma.PRESET_EXTREME)
     payload=base64.b85encode(packed).decode()
-    output=f"import lzma,base64;exec(lzma.decompress(base64.b85decode('{payload}')))\n"
+    output=f"x=2\nimport lzma,base64;exec(lzma.decompress(base64.b85decode('{payload}')))\n"
     return mini,payload,output
 def main():
     mini,payload,output=build((ROOT/'engine.py').read_text(encoding='utf-8'))
